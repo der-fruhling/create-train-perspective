@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'idea'
     id 'net.neoforged.moddev' version '2.0.141'
+    id 'com.modrinth.minotaur' version '2.+'
 }
 
 version = mod_version
@@ -164,6 +165,14 @@ publishing {
         maven {
             url "file://${project.projectDir}/repo"
         }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/der-fruhling-entertainment/create-train-perspective")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
     }
 }
 
@@ -174,3 +183,23 @@ idea {
         downloadJavadoc = true
     }
 }
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "create-train-perspective"
+    versionName = "Create: Train Perspective v${mod_version} (for Create 6.0.x, NeoForge 1.21.1)"
+    versionNumber = "${mod_version}+neoforge-1.21.1"
+    versionType = modrinth_version_type
+    uploadFile = jar
+    additionalFiles = []
+    gameVersions = [minecraft_version]
+    loaders = ["neoforge"]
+    changelog = rootProject.file("changelog.md").getText()
+    syncBodyFrom = rootProject.file("README.md").text
+
+    dependencies {
+        required.project 'create'
+        optional.project 'cloth-config'
+    }
+}
+

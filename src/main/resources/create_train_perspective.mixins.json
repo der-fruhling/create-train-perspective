@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.derfruhling.minecraft.create.trainperspective.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "AbstractContraptionEntityMixin",
+    "CameraMixin",
+    "ClientLevelMixin",
+    "CreateRaycastHelperMixin",
+    "EntityMixin",
+    "GameRendererMixin",
+    "LivingEntityRendererMixin",
+    "LocalPlayerMixin"
+  ],
+  "overwrites": {
+    "requireAnnotations": true,
+    "conformVisibility": true
+  },
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "verbose": true
+}

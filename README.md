@@ -8,6 +8,13 @@
 
 _More immersion!_
 
+> [!WARNING]
+> **You find yourself in a strange place...**
+>
+> While porting this mod to the newer versions, I was unable to get the original Architectury setup to work. Thus, this repository will contain a (perhaps temporary) copy of the code that uses the standard NeoForge setup. Which does work. Imagine that.
+>
+> For now this is not an issue, but the moment Create Fabric gets the new stuff this will need to be reworked again.
+
 ## What is this?
 
 With the normal Create behavior, the player's camera stays in the same direction when the train turns, giving the

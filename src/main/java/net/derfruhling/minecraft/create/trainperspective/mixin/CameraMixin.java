@@ -49,34 +49,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Implements({@Interface(iface = Camera3D.class, prefix = "c3d$")})
 @OnlyIn(Dist.CLIENT)
 public abstract class CameraMixin {
-    @Shadow
-    private Entity entity;
-    @Unique
-    private float ctp$zRot;
     @Unique
     private float ctp$extraYRot;
-    @Shadow
-    @Final
-    private Quaternionf rotation;
 
     @Shadow
     protected abstract void setRotation(float yRot, float xRot, float zRot);
 
     @Shadow
     protected abstract void setPosition(double x, double y, double z);
-
-    /**
-     * NeoForge allows modifying camera roll using an event.
-     */
-    @ModifyArg(method = "setRotation(FFF)V", require = 0, at = @At(value = "INVOKE", target = "Lorg/joml/Quaternionf;rotationYXZ(FFF)Lorg/joml/Quaternionf;", remap = false), index = 2)
-    private float modifyRoll(float original) {
-        return original + (ctp$zRot * Mth.DEG_TO_RAD);
-    }
-
-    @Unique
-    public float c3d$getZRot() {
-        return this.ctp$zRot;
-    }
 
     @Unique
     public float c3d$getExtraYRot() {
@@ -100,10 +80,11 @@ public abstract class CameraMixin {
             if (ModConfig.INSTANCE.debugEnableYawLock) yRot = ModConfig.INSTANCE.debugYawLock;
 
             if (Conditional.shouldApplyRolling()) {
-                ctp$zRot = persp.getLean(partialTick)
+                zRot += persp.getLean(partialTick)
                         * ModConfig.INSTANCE.rollMagnitude
                         * Mth.cos((persp.getYaw(partialTick) - yRot) * Mth.DEG_TO_RAD)
-                        * Mth.cos(xRot * Mth.DEG_TO_RAD);
+                        * Mth.cos(xRot * Mth.DEG_TO_RAD)
+                        * 0.5f;
             }
 
             ctp$extraYRot = MixinUtil.getExtraYRot(persp, xRot, yRot, partialTick);
@@ -116,7 +97,7 @@ public abstract class CameraMixin {
                         newX,
                         yRot,
                         ctp$extraYRot,
-                        zRot + ctp$zRot
+                        zRot
                 )), true);
             }
 
@@ -126,7 +107,6 @@ public abstract class CameraMixin {
                     zRot
             );
         } else {
-            ctp$zRot = 0;
             ctp$extraYRot = 0;
             setRotation(yRot, xRot, zRot);
         }

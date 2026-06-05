@@ -60,7 +60,7 @@ public abstract class CameraMixin {
     private Quaternionf rotation;
 
     @Shadow
-    protected abstract void setRotation(float yRot, float xRot);
+    protected abstract void setRotation(float yRot, float xRot, float zRot);
 
     @Shadow
     protected abstract void setPosition(double x, double y, double z);
@@ -83,7 +83,7 @@ public abstract class CameraMixin {
         return this.ctp$extraYRot;
     }
 
-    @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FFF)V"))
+    @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FFF)V", ordinal = 0))
     public void modifyRotations(Camera instance,
                                 float yRot,
                                 float xRot,
@@ -122,12 +122,13 @@ public abstract class CameraMixin {
 
             setRotation(
                     yRot,
-                    newX
+                    newX,
+                    zRot
             );
         } else {
             ctp$zRot = 0;
             ctp$extraYRot = 0;
-            setRotation(yRot, xRot);
+            setRotation(yRot, xRot, zRot);
         }
     }
 

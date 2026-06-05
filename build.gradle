@@ -187,7 +187,7 @@ idea {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "create-train-perspective"
-    versionName = "Create: Train Perspective v${mod_version} (for Create 6.0.x, NeoForge 1.21.1)"
+    versionName = "v${mod_version} (for Create 6.0.x, NeoForge 1.21.1)"
     versionNumber = "${mod_version}+neoforge-1.21.1"
     versionType = modrinth_version_type
     uploadFile = jar

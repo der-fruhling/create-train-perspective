@@ -62,7 +62,8 @@ public class ModConfig {
     public float rollMagnitude = 1.0f;
     public boolean applyToOthers = true;
     public boolean applyToNonPlayerEntities = true;
-    public List<? extends EntityType<?>> blockedEntities = new ArrayList<>();
+    public transient List<? extends EntityType<?>> blockedEntities = new ArrayList<>();
+    public List<ResourceLocation> blockedEntityUUIDs = new ArrayList<>();
     public List<UUID> blockedPlayerUUIDs = new ArrayList<>();
     public DebugMode debugMode = DebugMode.NONE;
     public boolean disableRotateWhenSeated = true;

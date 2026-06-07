@@ -107,12 +107,17 @@ public class ModConfigScreenFactory {
         advanced.add(entryBuilder
                 .startStrList(
                         Component.translatable("option.create_train_perspective.advanced.blocked_entities"),
-                        ModConfig.INSTANCE.blockedEntities.stream().map(e -> BuiltInRegistries.ENTITY_TYPE.getKey(e).toString()).toList())
+                        ModConfig.INSTANCE.blockedEntityUUIDs.stream().map(ResourceLocation::toString).toList())
                 .setTooltip(Component.translatable("option.create_train_perspective.advanced.blocked_entities.tooltip"))
-                .setSaveConsumer(value -> ModConfig.INSTANCE.blockedEntities = value.stream()
-                        .map(ResourceLocation::parse)
-                        .map(BuiltInRegistries.ENTITY_TYPE::get)
-                        .toList())
+                .setSaveConsumer(value -> {
+                    ModConfig.INSTANCE.blockedEntityUUIDs = value.stream()
+                            .map(ResourceLocation::parse)
+                            .toList();
+                    ModConfig.INSTANCE.blockedEntities = ModConfig.INSTANCE.blockedEntityUUIDs
+                            .stream()
+                            .map(BuiltInRegistries.ENTITY_TYPE::get)
+                            .toList();
+                })
                 .setDefaultValue(new ArrayList<>())
                 .build());
 

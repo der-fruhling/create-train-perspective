@@ -5,7 +5,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
     id "maven-publish"
 }
 
@@ -92,6 +92,7 @@ allprojects {
         maven { url = "https://jitpack.io/" }
         maven { url "https://maven.shedaniel.me/" }
         maven { url "https://maven.terraformersmc.com/releases/" }
+        maven { url = "https://api.modrinth.com/maven" }
     }
 
     tasks.withType(JavaCompile).configureEach {

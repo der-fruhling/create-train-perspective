@@ -30,17 +30,25 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.derfruhling.minecraft.create.trainperspective.Conditional;
+import net.derfruhling.minecraft.create.trainperspective.DebugMode;
 import net.derfruhling.minecraft.create.trainperspective.MixinUtil;
+import net.derfruhling.minecraft.create.trainperspective.ModConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
@@ -56,5 +64,33 @@ public class GameRendererMixin {
             poseStack.mulPose(Axis.ZP.rotationDegrees(mainCamera.getRoll()));
             poseStack.mulPose(Axis.YP.rotationDegrees(MixinUtil.asCamera3D(mainCamera).getExtraYRot()));
         }
+    }
+
+    @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;prepareCullFrustum(Lnet/minecraft/world/phys/Vec3;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"), index = 1)
+    public Matrix4f prepareCullFrustum(Matrix4f original) {
+        Matrix4f cameraRotationMatrix = new Matrix4f(original);
+        cameraRotationMatrix.rotate(
+                Axis.YP.rotationDegrees(MixinUtil.asCamera3D(mainCamera).getExtraYRot())
+        );
+
+        if (ModConfig.INSTANCE.debugMode == DebugMode.SHOW_CULL_DIRECTION) {
+            Vector4f originalView = original.transformTranspose(0, 0, 1, 0, new Vector4f());
+            Vector4f alteredView = cameraRotationMatrix.transformTranspose(0, 0, 1, 0, new Vector4f());
+
+            assert Minecraft.getInstance().player != null;
+            Minecraft.getInstance().player.displayClientMessage(Component.literal(String.format(
+                    "%.03f, %.03f, %.03f (%.03f) -> %.03f, %.03f, %.03f (%.03f)",
+                    originalView.x,
+                    originalView.y,
+                    originalView.z,
+                    originalView.w,
+                    alteredView.x,
+                    alteredView.y,
+                    alteredView.z,
+                    alteredView.w
+            )), true);
+        }
+
+        return cameraRotationMatrix;
     }
 }

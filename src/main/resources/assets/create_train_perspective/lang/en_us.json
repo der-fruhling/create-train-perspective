@@ -33,6 +33,7 @@
   "option.create_train_perspective.debug.debug_mode.show_standing_transforms": "Standing transforms",
   "option.create_train_perspective.debug.debug_mode.show_value_scales": "Value scales",
   "option.create_train_perspective.debug.debug_mode.show_camera_rotation": "Camera rotation",
+  "option.create_train_perspective.debug.debug_mode.show_cull_direction": "Culling direction",
   "option.create_train_perspective.debug.enable_yaw_lock": "Enable Yaw Lock",
   "option.create_train_perspective.debug.enable_yaw_lock.tooltip": "Enables the yaw lock",
   "option.create_train_perspective.debug.yaw_lock": "Yaw Value",

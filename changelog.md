@@ -1,6 +1,7 @@
 Changelog:
 
 - **Fixed** some residual jank, particularly with taller entities like iron golems and endermen.
+- **Slightly fixed** culling misbehavior at high "lean."
 ---
 
 Issues?

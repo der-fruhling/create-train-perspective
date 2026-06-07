@@ -3,6 +3,7 @@ package net.derfruhling.minecraft.create.trainperspective;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -106,9 +107,12 @@ public class ModConfigScreenFactory {
         advanced.add(entryBuilder
                 .startStrList(
                         Component.translatable("option.create_train_perspective.advanced.blocked_entities"),
-                        ModConfig.INSTANCE.blockedEntities.stream().map(ResourceLocation::toString).toList())
+                        ModConfig.INSTANCE.blockedEntities.stream().map(e -> BuiltInRegistries.ENTITY_TYPE.getKey(e).toString()).toList())
                 .setTooltip(Component.translatable("option.create_train_perspective.advanced.blocked_entities.tooltip"))
-                .setSaveConsumer(value -> ModConfig.INSTANCE.blockedEntities = value.stream().map(ResourceLocation::parse).toList())
+                .setSaveConsumer(value -> ModConfig.INSTANCE.blockedEntities = value.stream()
+                        .map(ResourceLocation::parse)
+                        .map(BuiltInRegistries.ENTITY_TYPE::get)
+                        .toList())
                 .setDefaultValue(new ArrayList<>())
                 .build());
 

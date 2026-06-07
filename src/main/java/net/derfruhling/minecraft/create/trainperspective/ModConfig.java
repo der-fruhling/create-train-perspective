@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -61,7 +62,7 @@ public class ModConfig {
     public float rollMagnitude = 1.0f;
     public boolean applyToOthers = true;
     public boolean applyToNonPlayerEntities = true;
-    public List<ResourceLocation> blockedEntities = new ArrayList<>();
+    public List<? extends EntityType<?>> blockedEntities = new ArrayList<>();
     public List<UUID> blockedPlayerUUIDs = new ArrayList<>();
     public DebugMode debugMode = DebugMode.NONE;
     public boolean disableRotateWhenSeated = true;

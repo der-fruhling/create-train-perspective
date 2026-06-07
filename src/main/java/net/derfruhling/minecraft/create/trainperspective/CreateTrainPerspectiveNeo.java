@@ -64,11 +64,4 @@ public class CreateTrainPerspectiveNeo {
     public void onClientTick(ClientTickEvent.Pre event) {
         ModConfig.tick();
     }
-
-//    @SubscribeEvent
-//    public void onViewportComputeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
-//        var camera3d = MixinUtil.asCamera3D(Minecraft.getInstance().gameRenderer.getMainCamera());
-//        event.setRoll(event.getRoll() + camera3d.getZRot());
-//    }
-
 }

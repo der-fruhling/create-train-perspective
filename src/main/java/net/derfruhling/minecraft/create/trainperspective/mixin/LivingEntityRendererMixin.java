@@ -31,6 +31,7 @@ import com.mojang.math.Axis;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import net.derfruhling.minecraft.create.trainperspective.Conditional;
 import net.derfruhling.minecraft.create.trainperspective.Perspective;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,25 +46,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntityRenderer.class)
 @OnlyIn(Dist.CLIENT)
 public class LivingEntityRendererMixin {
-    @Inject(method = "setupRotations", at = @At("HEAD"))
-    protected void setupRotations(LivingEntity entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale, CallbackInfo ci) {
+    @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;setupRotations(Lnet/minecraft/world/entity/LivingEntity;Lcom/mojang/blaze3d/vertex/PoseStack;FFFF)V"))
+    protected void render(LivingEntity entity, float p_115309_, float partialTick, PoseStack poseStack, MultiBufferSource p_115312_, int p_115313_, CallbackInfo ci) {
         if (Conditional.shouldApplyPerspectiveTo(entity)) {
             Perspective persp = (Perspective) entity;
-            Vec3 pos = null;
-
-            if (entity.getVehicle() != null && entity.getVehicle() instanceof CarriageContraptionEntity e) {
-                pos = e.getPassengerRidingPosition(entity).subtract(e.position());
-                poseStack.translate(pos.x, pos.y, pos.z);
-            }
 
             var lean = persp.getLean(partialTick);
             var yaw = persp.getYaw(partialTick);
+
+            poseStack.translate(0, entity.getEyeHeight(), 0);
+
             poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.cos(Mth.DEG_TO_RAD * yaw) * lean));
             poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(Mth.DEG_TO_RAD * yaw) * -lean));
 
-            if(pos != null) {
-                poseStack.translate(-pos.x, -pos.y, -pos.z);
-            }
+            poseStack.translate(0, -entity.getEyeHeight(), 0);
         }
     }
 }

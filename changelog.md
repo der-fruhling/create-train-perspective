@@ -1,12 +1,6 @@
-Create: Train Perspective is finally available for Create 6!
-
-This release includes said port and a handful of compat fixes to make sure complex things like Sable and mods that also mess with the camera still work.
-
 Changelog:
 
-- **Ported** to 1.21.1 and Create 6
-- **Fixed** some residual camera weirdness
-
+- **Fixed** some residual jank, particularly with taller entities like iron golems and endermen.
 ---
 
 Issues?

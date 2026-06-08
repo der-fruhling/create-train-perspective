@@ -26,6 +26,8 @@
 
 package net.derfruhling.minecraft.create.trainperspective;
 
+import dev.architectury.platform.Mod;
+import dev.architectury.platform.Platform;
 import net.minecraft.client.Camera;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +37,10 @@ import org.joml.Vector3d;
 public class MixinUtil {
     private MixinUtil() {
     }
+
+    public static final float XROT_MULT = Platform.getMod("create").getVersion().startsWith("0")
+            ? 1.0f
+            : 0.5f;
 
     public static Camera3D asCamera3D(Camera camera) {
         return (Camera3D) camera;

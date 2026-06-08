@@ -99,7 +99,7 @@ public abstract class CameraMixin {
                         * ModConfig.INSTANCE.rollMagnitude
                         * Mth.cos((persp.getYaw(partialTick) - yRot) * Mth.DEG_TO_RAD)
                         * Mth.cos(xRot * Mth.DEG_TO_RAD)
-                        * 0.5f;
+                        * MixinUtil.XROT_MULT;
             } else {
                 ctp$zRot = 0;
             }

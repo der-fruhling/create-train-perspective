@@ -27,7 +27,6 @@
 package net.derfruhling.minecraft.create.trainperspective;
 
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
-import com.simibubi.create.foundation.config.ConfigBase;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CClient;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
@@ -36,6 +35,7 @@ import net.minecraft.world.entity.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 public class CreateTrainPerspectiveMod {
@@ -52,14 +52,15 @@ public class CreateTrainPerspectiveMod {
                     //noinspection JavaReflectionMemberAccess
                     var field = client.getField("rotateWhenSeated");
                     field.setAccessible(true); // avoid issues
-                    var value = (ConfigBase.ConfigBool) field.get(AllConfigs.client());
-                    value.set(false);
+                    var value = field.get(AllConfigs.client());
+                    var valueClass = value.getClass();
+                    valueClass.getMethod("set", boolean.class).invoke(value, false);
                     LOGGER.warn("Workaround applied: disabled rotateWhenSeated in Create's config as it conflicts with this mod's functionality");
-                } catch (NoSuchFieldException e) {
+                } catch (NoSuchFieldException | NoSuchMethodException e) {
                     // field does not exist, probably just an older version of create
                     ModConfig.INSTANCE.isRotateWhenSeatedAvailable = false;
                     LOGGER.info("No such config option: rotateWhenSeated; probably using older version of Create, which is fine! Hooray!");
-                } catch (IllegalAccessException e) {
+                } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
             } else {

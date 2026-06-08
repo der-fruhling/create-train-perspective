@@ -79,6 +79,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven { url = 'https://maven.createmod.net/' }
         maven { url = 'https://maven.tterrag.com/' }
         maven { url = "https://mvn.devos.one/snapshots/" }
         maven { url = "https://mvn.devos.one/releases/" }

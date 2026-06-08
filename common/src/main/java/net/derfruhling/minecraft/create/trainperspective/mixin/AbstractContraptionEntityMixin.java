@@ -45,14 +45,14 @@ public class AbstractContraptionEntityMixin {
     @SuppressWarnings({"ConstantValue", "UnreachableCode"})
     @Inject(method = "registerColliding", at = @At("TAIL"), remap = false)
     private void onRegisterColliding(
-            Entity entity,
+            Entity collidingEntity,
             CallbackInfo ci
     ) {
-        if (!entity.level().isClientSide) return;
+        if (!collidingEntity.level().isClientSide) return;
         if ((Object) this instanceof CarriageContraptionEntity carriage
-                && entity instanceof Perspective
-                && Conditional.shouldApplyPerspectiveTo(entity)) {
-            CreateTrainPerspectiveMod.INSTANCE.tickStandingEntity(carriage, entity);
+                && collidingEntity instanceof Perspective
+                && Conditional.shouldApplyPerspectiveTo(collidingEntity)) {
+            CreateTrainPerspectiveMod.INSTANCE.tickStandingEntity(carriage, collidingEntity);
         }
     }
 }

@@ -27,6 +27,8 @@
 package net.derfruhling.minecraft.create.trainperspective.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 import net.derfruhling.minecraft.create.trainperspective.Conditional;
 import net.derfruhling.minecraft.create.trainperspective.MixinUtil;
@@ -34,13 +36,14 @@ import net.derfruhling.minecraft.create.trainperspective.Perspective;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(RaycastHelper.class)
 public class CreateRaycastHelperMixin {
-    @ModifyReturnValue(method = "getTraceOrigin", at = @At("RETURN"))
-    private static Vec3 applyLeaning(Vec3 original, Player player) {
+    @Unique
+    private static Vec3 ctp$applyLeaning(Vec3 original, Player player) {
         if (Conditional.shouldApplyPerspectiveTo(player) && player instanceof Perspective persp) {
             var newV = MixinUtil.applyStandingCameraTranslation(player, original, persp, 1.0f);
             if(player.isPassenger()) newV.add(0.0f, 0.5f, 0.0f);
@@ -50,7 +53,21 @@ public class CreateRaycastHelperMixin {
         }
     }
 
-    @ModifyVariable(method = "getTraceTarget", at = @At("STORE"), index = 4)
+    @ModifyReturnValue(method = "getTraceOrigin", require = 0, at = @At("RETURN"))
+    private static Vec3 applyLeaning(Vec3 original, Player player) {
+        return ctp$applyLeaning(original, player);
+    }
+
+    @WrapOperation(method = {
+            "rayTraceUntil(Lnet/minecraft/world/entity/player/Player;DLjava/util/function/Predicate;)Lcom/simibubi/create/foundation/utility/RaycastHelper$PredicateTraceResult;",
+            "rayTraceRange"
+    }, require = 0, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getEyePosition()Lnet/minecraft/world/phys/Vec3;"))
+    private static Vec3 applyLeaning(Player player, Operation<Vec3> op) {
+        Vec3 original = op.call(player);
+        return ctp$applyLeaning(original, player);
+    }
+
+    @ModifyVariable(method = "getTraceTarget", at = @At("STORE"), name = "f")
     private static float modifyPitch(float pitch, Player player) {
         if (player instanceof Perspective persp
                 && Conditional.shouldApplyPerspectiveTo(player)) {
@@ -58,7 +75,7 @@ public class CreateRaycastHelperMixin {
         } else return pitch;
     }
 
-    @ModifyVariable(method = "getTraceTarget", at = @At("STORE"), index = 5)
+    @ModifyVariable(method = "getTraceTarget", at = @At("STORE"), name = "f1")
     private static float modifyYaw(float yaw, Player player) {
         if (player instanceof Perspective persp
                 && Conditional.shouldApplyPerspectiveTo(player)) {

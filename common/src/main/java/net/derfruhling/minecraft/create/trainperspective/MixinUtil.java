@@ -54,6 +54,11 @@ public class MixinUtil {
         var lean = persp.getLean(f) * Mth.DEG_TO_RAD;
         var yaw = persp.getYaw(f) * Mth.DEG_TO_RAD;
         var height = player.getEyeHeight();
+
+        if(player.getVehicle() != null) {
+            height -= 1.5f;
+        }
+
         var newY = y + ((height * Mth.cos(lean)) - height);
         var leanSin = Mth.sin(lean);
         var newZ = z - (height * Mth.sin(yaw) * leanSin);

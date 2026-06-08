@@ -47,8 +47,8 @@ public class ClientLevelMixin {
     }
 
     @Inject(method = "tickPassenger", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;rideTick()V", shift = At.Shift.AFTER))
-    public void onTickPassenger(Entity vehicle, Entity rider, CallbackInfo ci) {
-        if (Conditional.shouldApplyPerspectiveTo(rider) && vehicle instanceof CarriageContraptionEntity) {
+    public void onTickPassenger(Entity mount, Entity rider, CallbackInfo ci) {
+        if (Conditional.shouldApplyPerspectiveTo(rider) && mount instanceof CarriageContraptionEntity) {
             CreateTrainPerspectiveMod.INSTANCE.tickEntity(rider, (Perspective) rider);
         }
     }

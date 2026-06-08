@@ -48,7 +48,10 @@
   ],
   "depends": {
     "architectury": "*",
-    "create": "~0.5.0",
+    "create": [
+      "~0.5",
+      "~6.0"
+    ],
     "minecraft": "1.20.1"
   }
 }

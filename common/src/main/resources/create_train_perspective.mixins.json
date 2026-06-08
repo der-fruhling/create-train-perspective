@@ -11,7 +11,8 @@
     "EntityMixin",
     "GameRendererMixin",
     "LivingEntityRendererMixin",
-    "LocalPlayerMixin"
+    "LocalPlayerMixin",
+    "ContraptionPlayerPassengerRotationMixin"
   ],
   "overwrites": {
     "requireAnnotations": true,

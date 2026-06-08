@@ -32,6 +32,7 @@ import net.derfruhling.minecraft.create.trainperspective.Conditional;
 import net.derfruhling.minecraft.create.trainperspective.Perspective;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,21 +44,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntityRenderer.class)
 @Environment(EnvType.CLIENT)
 public class LivingEntityRendererMixin {
-    @Inject(method = "setupRotations", at = @At("HEAD"))
-    protected void setupRotations(LivingEntity livingEntity, PoseStack poseStack, float f, float g, float h, CallbackInfo ci) {
-        if (Conditional.shouldApplyPerspectiveTo(livingEntity)) {
-            Perspective persp = (Perspective) livingEntity;
-            float offset = 0;
+    @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;setupRotations(Lnet/minecraft/world/entity/LivingEntity;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V"))
+    protected void render(LivingEntity entity, float p_115309_, float partialTick, PoseStack poseStack, MultiBufferSource p_115312_, int p_115313_, CallbackInfo ci) {
+        if (Conditional.shouldApplyPerspectiveTo(entity)) {
+            Perspective persp = (Perspective) entity;
 
-            if (livingEntity.getVehicle() != null) {
-                offset = 0.5f;
-            }
+            var lean = persp.getLean(partialTick);
+            var yaw = persp.getYaw(partialTick);
 
-            var lean = persp.getLean(h);
-            var yaw = persp.getYaw(h);
+            poseStack.translate(0, entity.getEyeHeight(), 0);
+
             poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.cos(Mth.DEG_TO_RAD * yaw) * lean));
             poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(Mth.DEG_TO_RAD * yaw) * -lean));
-            poseStack.translate(0, offset, 0);
+
+            poseStack.translate(0, -entity.getEyeHeight(), 0);
         }
     }
 }

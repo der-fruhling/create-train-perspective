@@ -12,7 +12,8 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modImplementation "dev.architectury:architectury:${architectury_version}"
 
-    modImplementation("maven.modrinth:create:${create_minecraft_version}-${create_version}") { transitive = false }
+    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    modImplementation("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_version}")
 
     modImplementation "me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}"
 }

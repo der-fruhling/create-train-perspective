@@ -29,15 +29,15 @@ package net.derfruhling.minecraft.create.trainperspective;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import org.jetbrains.annotations.Nullable;
 
 public class Conditional {
     private Conditional() {
     }
 
-    public static boolean shouldApplyPerspectiveTo(Entity player) {
-        if (ModConfig.INSTANCE.enabled) {
-            return (ModConfig.INSTANCE.applyToNonPlayerEntities && !ModConfig.INSTANCE.blockedEntities.contains(EntityType.getKey(player.getType()))) ||
+    public static boolean shouldApplyPerspectiveTo(@Nullable Entity player) {
+        if (player != null && ModConfig.INSTANCE.enabled) {
+            return (ModConfig.INSTANCE.applyToNonPlayerEntities && !ModConfig.INSTANCE.blockedEntities.contains(player.getType())) ||
                     (ModConfig.INSTANCE.applyToOthers && !ModConfig.INSTANCE.blockedPlayerUUIDs.contains(player.getUUID()) && player instanceof RemotePlayer)
                     || player instanceof LocalPlayer;
         } else {

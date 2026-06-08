@@ -26,7 +26,6 @@
 
 package net.derfruhling.minecraft.create.trainperspective.mixin;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import net.derfruhling.minecraft.create.trainperspective.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -54,6 +53,7 @@ public abstract class CameraMixin {
     private float ctp$zRot;
     @Unique
     private float ctp$extraYRot;
+
     @Shadow
     @Final
     private Quaternionf rotation;
@@ -79,50 +79,53 @@ public abstract class CameraMixin {
         return this.ctp$extraYRot;
     }
 
-    @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V"))
+    @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", ordinal = 0))
     public void modifyRotations(Camera instance,
-                                float y,
-                                float x,
-                                BlockGetter blockGetter,
+                                float yRot,
+                                float xRot,
+                                BlockGetter level,
                                 Entity entity,
-                                boolean isThirdPerson,
-                                boolean bl2,
-                                float f) {
+                                boolean detached,
+                                boolean thirdPersonReverse,
+                                float partialTick) {
         if (entity instanceof Perspective persp
                 && Conditional.shouldApplyPerspectiveTo(entity)
                 && Conditional.shouldApplyLeaning()
-                && !isThirdPerson) {
-            if (ModConfig.INSTANCE.debugEnableYawLock) y = ModConfig.INSTANCE.debugYawLock;
+                && !detached) {
+            if (ModConfig.INSTANCE.debugEnableYawLock) yRot = ModConfig.INSTANCE.debugYawLock;
 
             if (Conditional.shouldApplyRolling()) {
-                ctp$zRot = persp.getLean(f)
+                ctp$zRot = persp.getLean(partialTick)
                         * ModConfig.INSTANCE.rollMagnitude
-                        * Mth.cos((persp.getYaw(f) - y) * Mth.DEG_TO_RAD)
-                        * Mth.cos(x * Mth.DEG_TO_RAD);
+                        * Mth.cos((persp.getYaw(partialTick) - yRot) * Mth.DEG_TO_RAD)
+                        * Mth.cos(xRot * Mth.DEG_TO_RAD)
+                        * 0.5f;
+            } else {
+                ctp$zRot = 0;
             }
 
-            ctp$extraYRot = MixinUtil.getExtraYRot(persp, x, y, f);
-            var newX = MixinUtil.applyDirectionXRotChange(persp, x, y, f);
+            ctp$extraYRot = MixinUtil.getExtraYRot(persp, xRot, yRot, partialTick);
+            var newX = MixinUtil.applyDirectionXRotChange(persp, xRot, yRot, partialTick);
 
             if(ModConfig.INSTANCE.debugMode == DebugMode.SHOW_CAMERA_ROTATION) {
                 assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.displayClientMessage(Component.literal(String.format(
                         "%.03f, %.03f (%.03f), %.03f",
                         newX,
-                        y,
+                        yRot,
                         ctp$extraYRot,
                         ctp$zRot
                 )), true);
             }
 
             setRotation(
-                    y,
+                    yRot,
                     newX
             );
         } else {
-            ctp$zRot = 0;
             ctp$extraYRot = 0;
-            setRotation(y, x);
+            ctp$zRot = 0;
+            setRotation(yRot, xRot);
         }
     }
 
@@ -131,20 +134,17 @@ public abstract class CameraMixin {
                                double x,
                                double y,
                                double z,
-                               BlockGetter blockGetter,
+                               BlockGetter level,
                                Entity entity,
-                               boolean isThirdPerson,
-                               boolean bl2,
-                               float f) {
+                               boolean detached,
+                               boolean thirdPersonReverse,
+                               float partialTick) {
         if (entity instanceof AbstractClientPlayer clientPlayer
                 && Conditional.shouldApplyPerspectiveTo(entity)
                 && Conditional.shouldApplyLeaning()
-//                && clientPlayer.getVehicle() == null
-                && !isThirdPerson) {
+                && !detached) {
             var persp = (Perspective) clientPlayer;
-            var newV = MixinUtil.applyStandingCameraTranslation(clientPlayer, x, y, z, persp, f);
-
-            if(entity.isPassenger()) newV.y += 0.5;
+            var newV = MixinUtil.applyStandingCameraTranslation(clientPlayer, x, y, z, persp, partialTick);
 
             if (ModConfig.INSTANCE.debugMode == DebugMode.SHOW_STANDING_TRANSFORMS) {
                 clientPlayer.displayClientMessage(Component.literal("%f, %f, %f".formatted(x - newV.x, y - newV.y, z - newV.z)), true);
